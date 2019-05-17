@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="" xmlns:sec="http://www.w3.org/1999/xhtml">
+<title>My Blog</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" th:href="@{/style.css}">
+<link rel="stylesheet" th:href="@{/add-customer-style.css}">
+<style>
+
+    body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
+</style>
+
+<div id='cssmenu'>
+    <ul>
+        <li><a th:href="@{/home}"><b>Home</b></a></li>
+        <li><a sec:authorize="isAnonymous()" th:href="@{/login}"><b>Login</b></a></li>
+
+        <li><a th:href="@{/logout}" sec:authorize="isAuthenticated()"><b>Logout</b></a></li>
+        <li><a th:href="@{/newPost}" sec:authorize="hasAuthority('ROLE_ADMIN')"><b>New Post</b></a></li>
+
+        <!--<li class='active has-sub'><a href='#'><span>Edit account</span></a>-->
+        <!--<ul>-->
+        <!--<li class='has-sub'><a href='#'><span>Change password</span></a>-->
+        <!--<ul>-->
+        <!--<li><a href='#'><span>asd</span></a></li>-->
+        <!--<li class='last'><a href='#'><span>Change email</span></a></li>-->
+        <!--</ul>-->
+        <!--</li>-->
+        <!--<li class='has-sub'><a href='#'><span>Product 2</span></a>-->
+        <!--<ul>-->
+        <!--<li><a href='#'><span>Sub Product</span></a></li>-->
+        <!--<li class='last'><a href='#'><span>Sub Product</span></a></li>-->
+        <!--</ul>-->
+        <!--</li>-->
+        <!--</ul>-->
+        <!--</li>-->
+        <li class='last'><a href='/showUsers' sec:authorize="hasAuthority('ROLE_ADMIN')"><span><b>Show User List</b></span></a></li>
+
+    </ul>
+</div>
+
+<body class="w3-light-grey">
+
+<!-- w3-content defines a container for fixed size centered content,
+and is wrapped around the whole page content, except for the footer in this example -->
+<div class="w3-content" style="max-width:1400px">
+
+    <!-- Header -->
+    <header class="w3-container w3-center w3-padding-32">
+        <h1><b>MY BLOG</b></h1>
+        <!--<div sec:authorize="isAnonymous()">Welcome on my blog :)</div>-->
+        <!--<div sec:authorize="isAuthenticated()">Welcome back </div>-->
+        <!--<div sec:authorize="isAuthenticated()" th:text="${showActiveUserName.name}"> </div>-->
+        <!--<p th:text="${showActiveUserName.name}"> </p><span class="w3-tag"></span></p>-->
+    </header>
+
+    <!-- Grid -->
+
+    <div class="w3-row">
+        <!-- Blog entries -->
+        <div class="w3-col l8 s12">
+            <!-- Blog entry -->
+            <div class="w3-card-4 w3-margin w3-white">
+                <img src="https://www.w3schools.com/w3images/woods.jpg" alt="Nature" style="width:100%">
+
+                <div id="container">
+                    <h3>Create Post</h3>
+
+                    <form th:action="@{/savePost}" modelAttribute="post" method="post">
+
+                        <input type="hidden" th:field="*{post.id}" />
+                        <!--<input type="hidden" th:field="*{post.createDate}" />-->
+
+                        <table>
+                            <tbody>
+                            <tr>
+                                <td><label>Title:</label></td>
+                                <td><input size="100" name="title" th:value="${post.title}"/></td>
+                            </tr>
+
+                            <tr>
+                                <td><label>Body:</label></td>
+                                <td>
+                                    <textarea th:rows="4" th:cols="99" width="300" class="scrollabletextbox" th:field="${post.body}"></textarea>
+
+                                    <!--<input size="100" style="height:100px;" height="250" name="body" th:value="${post.body}"/>-->
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td><label></label></td>
+                                <td><input type="submit" value="Save" class="save"/></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </form>
+
+                    <p>
+                        <a th:href="@{/home}">Return</a>
+                    </p>
+
+                </div>
+            </div>
+            <hr>
+
+            <!-- END BLOG ENTRIES -->
+        </div>
+
+        <!-- Introduction menu -->
+        <div class="w3-col l4">
+            <!-- Posts -->
+            <div class="w3-card w3-margin">
+                <div class="w3-container w3-padding">
+                    <h4>Last Posts</h4>
+                </div>
+                <ul class="w3-ul w3-hoverable w3-white"  th:each="post : ${lastPostList}">
+                    <li class="w3-padding-16" th:href="@{/readMore(postId=${post.id})}">
+                        <img src="https://www.w3schools.com/w3images/gondol.jpg" alt="Image" class="w3-left w3-margin-right" style="width:50px">
+                        <span class="w3-large"><b th:text="${post.title}"></b></span><br>
+                        <span ><a th:href="@{/readMore(postId=${post.id})}">Read more</a></span>
+                    </li>
+                </ul>
+            </div>
+            <hr>
+
+        <!-- END GRID -->
+    </div><br>
+
+    <!-- END w3-content -->
+</div>
+
+</body>
+
+
+</html>

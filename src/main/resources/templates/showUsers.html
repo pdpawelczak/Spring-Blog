@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="" xmlns:sec="http://www.w3.org/1999/xhtml">
+<title>My Blog</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" th:href="@{/style.css}">
+<!--<link rel="stylesheet" th:href="@{/add-customer-style.css}">-->
+<style>
+    table {
+        width: 100%;
+    }
+    tr:nth-child(even) {background-color: #f2f2f2;}
+
+    body, h1, h2, h3, h4, h5 {
+        font-family: "Raleway", sans-serif
+    }
+</style>
+
+<div id='cssmenu'>
+    <ul>
+        <li><a th:href="@{/home}"><b>Home</b></a></li>
+        <li><a sec:authorize="isAnonymous()" th:href="@{/login}"><b>Login</b></a></li>
+
+        <li><a th:href="@{/logout}" sec:authorize="isAuthenticated()"><b>Logout</b></a></li>
+        <li><a th:href="@{/newPost}" sec:authorize="hasAuthority('ROLE_ADMIN')"><b>New Post</b></a></li>
+        <li class='last'><a href='/showUsers'
+                            sec:authorize="hasAuthority('ROLE_ADMIN')"><span><b>Show User List</b></span></a></li>
+
+    </ul>
+</div>
+
+<div class="w3-light-grey">
+
+    <!-- w3-content defines a container for fixed size centered content,
+    and is wrapped around the whole page content, except for the footer in this example -->
+    <div class="w3-content" style="max-width:1400px">
+
+
+
+        <!-- Grid -->
+
+        <div class="w3-row">
+            <!-- Blog entries -->
+            <div class="w3-col l8 s12">
+                <!-- Blog entry -->
+                <div class="w3-card-4 w3-margin w3-white">
+                    <img src="https://www.w3schools.com/w3images/woods.jpg" alt="Nature" style="width:100%">
+
+                    <div id="wrapper">
+                        <div id="header">
+                            <h2>User list</h2>
+                        </div>
+                    </div>
+
+                    <div id="container">
+
+                        <div id="content">
+
+                            <form action="searchUser" method="get">
+                                Search customer: <input type="text" name="searchName">
+                                <input type="submit" value="Search" class="add-button"/>
+                            </form>
+
+
+                            <table>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Is Enabled</th>
+                                    <th>Action</th>
+                                </tr>
+
+                                <th:block th:each="user : ${userList}">
+                                    <tr>
+                                        <td th:text="${user.username}"></td>
+                                        <td th:text="${user.email}"></td>
+                                        <td th:text="${user.enabled}"></td>
+                                        <td>
+                                            <div th:if="${user.username != 'admin'}">
+                                                <div th:if="${user.enabled == true}">
+                                                    <a th:href="@{/banUser(userId=${user.getId()})}"
+                                                       onclick="if (!(confirm('Are you sure you want to ban this user?'))) return false"
+                                                    >Ban</a>
+                                                </div>
+                                                <div th:if="${user.enabled == false}">
+                                                    <a th:href="@{/unbanUser(userId=${user.getId()})}"
+                                                       onclick="if (!(confirm('Are you sure you want to unban this user?'))) return false"
+                                                    >Unban</a>
+                                                </div>
+
+                                            </div>
+
+                                        </td>
+                                    </tr>
+                                </th:block>
+
+
+                            </table>
+
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>
+
+            <!-- Introduction menu -->
+            <div class="w3-col l4">
+                <!-- About Card -->
+                <div class="w3-card w3-margin w3-margin-top">
+                    <img src="https://www.w3schools.com/w3images/avatar_g.jpg" style="width:100%">
+                    <div class="w3-container w3-white">
+                        <h4><b>My Name</b></h4>
+                        <p>Just me, myself and I, exploring the universe of uknownment. I have a heart of love and a interest of lorem ipsum and mauris neque quam blog. I want to share my world with you.</p>
+                    </div>
+                </div><hr>
+            </div>
+        </div>
+
+
+
+    </div>
+</div>
+
+</html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html xmlns:th="" xmlns:sec="http://www.w3.org/1999/xhtml">
+<title>My Blog</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" th:href="@{/style.css}">
+
+<link rel="stylesheet" th:href="@{/comment.css}">
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<style>
+    body, h1, h2, h3, h4, h5 {
+        font-family: "Raleway", sans-serif
+    }
+</style>
+
+
+<div id='cssmenu'>
+    <ul>
+        <li><a th:href="@{/home}"><b>Home</b></a></li>
+        <li><a sec:authorize="isAnonymous()" th:href="@{/login}"><b>Login</b></a></li>
+
+        <li><a th:href="@{/logout}" sec:authorize="isAuthenticated()"><b>Logout</b></a></li>
+        <li><a th:href="@{/newPost}" sec:authorize="hasAuthority('ROLE_ADMIN')"><b>New Post</b></a></li>
+        <li class='last'><a href='/showUsers' sec:authorize="hasAuthority('ROLE_ADMIN')"><span><b>Show User List</b></span></a></li>
+
+    </ul>
+</div>
+
+<body class="w3-light-grey">
+
+<div class="w3-content" style="max-width:1400px">
+
+    <!-- Header -->
+    <header class="w3-container w3-center w3-padding-32">
+        <h1><b>MY BLOG</b></h1>
+    </header>
+
+    <!-- Grid -->
+
+    <div class="w3-row">
+        <!-- Blog entries -->
+        <div class="w3-col l8 s12">
+            <!-- Blog entry -->
+            <div class="w3-card-4 w3-margin w3-white">
+                <img src="https://www.w3schools.com/w3images/woods.jpg" alt="Nature" style="width:100%">
+                <div class="w3-container">
+                    <h3><b th:text="${post.title}"></b></h3>
+                    <h5><span class="w3-opacity" th:text="${post.createDate}"></span></h5>
+                </div>
+
+                <div class="w3-container">
+                    <!--Post body-->
+                    <p th:text="${post.body}"></p>
+
+                    <div class="w3-row">
+                        <div class="w3-col m8 s12">
+                            <p>
+
+                                <button class="w3-button w3-padding-large w3-white w3-border"><a
+                                        href="/home"><b>RETURN</b> </a></button>
+
+                                <button class="w3-button w3-padding-large w3-white w3-border"
+                                        sec:authorize="hasAuthority('ROLE_ADMIN')">
+                                    <a th:href="@{/updatePost(postId=${post.Id})}"><b>Edit post</b></a></button>
+
+                                <button class="w3-button w3-padding-large w3-white w3-border"
+                                        sec:authorize="hasAuthority('ROLE_ADMIN')">
+                                    <a th:href="@{/deletePost(postId=${post.Id})}"
+                                       onclick="if (!(confirm('Are you sure you want to delete this post?'))) return false">
+                                        <b>Delete post</b></a></button>
+
+                            </p>
+                        </div>
+                        <div class="w3-col m4 w3-hide-small">
+                            <p><span class="w3-padding-large w3-right"><b>Comments  </b> <span
+                                    class="w3-tag">0</span></span></p>
+                        </div>
+
+                        <!--Comment-->
+
+                        <form th:action="@{/saveComment}" modelAttribute="comment" method="post">
+                            <input type="hidden" th:field="*{comment.post}" th:value="${postId}"/>
+                            <input type="hidden" th:field="*{comment.user}"/>
+
+                            <table>
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        <textarea th:rows="4" th:cols="99" width="300" class="scrollabletextbox"
+                                                  th:field="${comment.body}"></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><input type="submit" value="Add comment" class="save"/></td>
+                                </tr>
+
+
+                                </tbody>
+                            </table>
+                        </form>
+                    </div>
+
+                    <br>
+
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h2 class="page-header">Comments</h2>
+                            <section class="comment-list" th:each="com : ${post.comments}">
+                                <!-- First Comment -->
+                                <article class="row">
+                                    <div class="col-md-2 col-sm-2 hidden-xs">
+                                        <figure class="thumbnail">
+                                            <img class="img-responsive"
+                                                 src="http://www.tangoflooring.ca/wp-content/uploads/2015/07/user-avatar-placeholder.png"/>
+                                            <figcaption class="text-center"></figcaption>
+                                        </figure>
+                                    </div>
+                                    <div class="col-md-10 col-sm-10">
+                                        <div class="panel panel-default arrow left">
+                                            <div class="panel-body">
+                                                <header class="text-left">
+                                                    <time class="comment-date" th:text="${com.createDate}"><i
+                                                            class="fa fa-clock-o"></i></time>
+                                                </header>
+                                                <div class="comment-post">
+                                                    <p th:text="${com.body}">
+                                                    </p>
+                                                </div>
+                                                <p class="text-right"><a href="#" class="btn btn-default btn-sm"><i
+                                                        class="fa fa-reply"></i> reply</a></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </article>
+                            </section>
+                        </div>
+                    </div>
+
+                    <!--<div class="w3-row">-->
+                    <!--<div class="w3-col m8 s12">-->
+                    <!--<ul>-->
+                    <!--<li th:each="com : ${post.comments}" th:text="${com.body}"></li>-->
+                    <!--</ul>-->
+                    <!--</div>-->
+                    <!--</div>-->
+
+
+                </div>
+            </div>
+            <hr>
+
+            <!-- END BLOG ENTRIES -->
+        </div>
+
+
+        <!-- Introduction menu -->
+        <div class="w3-col l4">
+            <!-- About Card -->
+            <div class="w3-card w3-margin w3-margin-top">
+                <img src="https://www.w3schools.com/w3images/avatar_g.jpg" style="width:100%">
+                <div class="w3-container w3-white">
+                    <h4><b>My Name</b></h4>
+                    <p>Just me, myself and I, exploring the universe of uknownment. I have a heart of love and a
+                        interest of lorem ipsum and mauris neque quam blog. I want to share my world with you.</p>
+                </div>
+            </div>
+            <hr>
+
+            <!-- Posts -->
+            <div class="w3-card w3-margin">
+                <div class="w3-container w3-padding">
+                    <h4>Last Posts</h4>
+                </div>
+                <ul class="w3-ul w3-hoverable w3-white"
+                    th:each="post : ${lastPostList}">
+                    <li class="w3-padding-16" th:href="@{/readMore(postId=${post.id})}">
+                        <img src="https://www.w3schools.com/w3images/gondol.jpg" alt="Image"
+                             class="w3-left w3-margin-right" style="width:50px">
+                        <span class="w3-large"><b th:text="${post.title}"></b></span><br>
+                        <span><a th:href="@{/readMore(postId=${post.id})}">Read more</a></span>
+                    </li>
+                </ul>
+            </div>
+            <hr>
+
+            <!-- Labels / tags -->
+            <div class="w3-card w3-margin">
+                <div class="w3-container w3-padding">
+                    <h4>Tags</h4>
+                </div>
+                <div class="w3-container w3-white">
+                    <p><span class="w3-tag w3-black w3-margin-bottom">Travel</span> <span
+                            class="w3-tag w3-light-grey w3-small w3-margin-bottom">New York</span> <span
+                            class="w3-tag w3-light-grey w3-small w3-margin-bottom">London</span>
+                        <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">IKEA</span> <span
+                                class="w3-tag w3-light-grey w3-small w3-margin-bottom">NORWAY</span> <span
+                                class="w3-tag w3-light-grey w3-small w3-margin-bottom">DIY</span>
+                        <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">Ideas</span> <span
+                                class="w3-tag w3-light-grey w3-small w3-margin-bottom">Baby</span> <span
+                                class="w3-tag w3-light-grey w3-small w3-margin-bottom">Family</span>
+                        <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">News</span> <span
+                                class="w3-tag w3-light-grey w3-small w3-margin-bottom">Clothing</span> <span
+                                class="w3-tag w3-light-grey w3-small w3-margin-bottom">Shopping</span>
+                        <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">Sports</span> <span
+                                class="w3-tag w3-light-grey w3-small w3-margin-bottom">Games</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- END Introduction Menu -->
+        </div>
+
+        <!-- END GRID -->
+    </div>
+    <br>
+
+    <!-- END w3-content -->
+</div>
+
+<!-- Footer -->
+<footer class="w3-container w3-dark-grey w3-padding-32 w3-margin-top">
+    <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+</footer>
+
+</body>
+</html>
